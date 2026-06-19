@@ -14,9 +14,7 @@ function App() {
   const galleryRef = useRef(null);
   const fileRef = useRef(null);
 
-  useEffect(() => {
-  console.log("API URL:", import.meta.env.VITE_API_URL);
-}, []);
+
 
  const handleSubmit = async () => {
   if (!file) {
