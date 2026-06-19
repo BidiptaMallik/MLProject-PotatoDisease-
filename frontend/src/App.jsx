@@ -1,50 +1,54 @@
 import { useState, useRef } from "react";
 import "./App.css";
 
-
-
-
-
 function App() {
   const [started, setStarted] = useState(false);
   const [file, setFile] = useState(null);
   const [result, setResult] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   const cameraRef = useRef(null);
   const galleryRef = useRef(null);
   const fileRef = useRef(null);
 
-
-
- const handleSubmit = async () => {
-  if (!file) {
-    alert("Please select an image");
-    return;
-  }
-
-  const formData = new FormData();
-  formData.append("file", file);
-
-  try {
-    const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
-
-    const response = await fetch(`${API_URL}/predict`, {
-      method: "POST",
-      body: formData,
-    });
-
-    const data = await response.json();
-
-    if (!response.ok || data.error) {
-      throw new Error(data.error || "Prediction failed");
+  const handleSubmit = async () => {
+    if (!file) {
+      alert("Please select an image");
+      return;
     }
 
-    setResult(data);
-  } catch (error) {
-    console.error(error);
-    alert(error.message);
-  }
-};
+    setLoading(true);
+    setResult(null);
+
+    try {
+      const API_URL =
+        import.meta.env.VITE_API_URL || "http://localhost:8000";
+
+      console.log("Calling API:", `${API_URL}/predict`);
+
+      const formData = new FormData();
+      formData.append("file", file);
+
+      const response = await fetch(`${API_URL}/predict`, {
+        method: "POST",
+        body: formData,
+      });
+
+      const data = await response.json();
+      console.log("API RESPONSE:", data);
+
+      if (!response.ok) {
+        throw new Error(data?.error || "Prediction failed");
+      }
+
+      setResult(data);
+    } catch (error) {
+      console.error("ERROR:", error);
+      alert(error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   if (!started) {
     return (
@@ -68,6 +72,7 @@ function App() {
         style={{ display: "none" }}
         onChange={(e) => setFile(e.target.files[0])}
       />
+
       <input
         ref={galleryRef}
         type="file"
@@ -75,6 +80,7 @@ function App() {
         style={{ display: "none" }}
         onChange={(e) => setFile(e.target.files[0])}
       />
+
       <input
         ref={fileRef}
         type="file"
@@ -83,12 +89,20 @@ function App() {
       />
 
       <div className="predict-card">
-        <h1 className="main-title predict-title">Potato Disease Detector</h1>
+        <h1 className="main-title predict-title">
+          Potato Disease Detector
+        </h1>
 
         <div className="buttons">
-          <button onClick={() => cameraRef.current.click()}>📷 Take Photo</button>
-          <button onClick={() => galleryRef.current.click()}>🖼️ Gallery</button>
-          <button onClick={() => fileRef.current.click()}>📁 Upload File</button>
+          <button onClick={() => cameraRef.current.click()}>
+            📷 Take Photo
+          </button>
+          <button onClick={() => galleryRef.current.click()}>
+            🖼️ Gallery
+          </button>
+          <button onClick={() => fileRef.current.click()}>
+            📁 Upload File
+          </button>
         </div>
 
         {file && (
@@ -99,14 +113,20 @@ function App() {
           />
         )}
 
-        <button className="predict-btn" onClick={handleSubmit}>
-          Predict
+        <button
+          className="predict-btn"
+          onClick={handleSubmit}
+          disabled={loading}
+        >
+          {loading ? "Predicting..." : "Predict"}
         </button>
 
         {result && (
           <div className="result">
             <h2>{result.class}</h2>
-            <h3>Confidence: {(result.confidence * 100).toFixed(2)}%</h3>
+            <h3>
+              Confidence: {(result.confidence * 100).toFixed(2)}%
+            </h3>
           </div>
         )}
       </div>
