@@ -43,33 +43,30 @@ def read_file_as_image(data) -> np.ndarray:
 async def predict(file: UploadFile = File(...)):
 
     image = read_file_as_image(await file.read())
-
     img_batch = np.expand_dims(image, axis=0)
 
-    json_data = {
-    "instances": img_batch.tolist()
-    }
+    json_data = {"instances": img_batch.tolist()}
 
     response = requests.post(endpoint, json=json_data)
 
-
-    
-
     if response.status_code != 200:
         return {"error": response.text}
-    
-    prediction = np.array(response.json()["predictions"])
 
-    print("RAW PREDICTION:", prediction)
-    print("ARGMAX:", np.argmax(prediction[0]))
+    result = response.json()
 
-    prediction = np.array(response.json()["predictions"])
+    predictions = np.array(result.get("predictions"))
 
-    predicted_class = CLASS_NAMES[np.argmax(prediction[0])]
-    confidence = float(np.max(prediction[0]))
+    # 🔥 safety check
+    if predictions is None or len(predictions) == 0:
+        return {"error": "Invalid prediction from model"}
+
+    probs = predictions[0]
+
+    predicted_index = int(np.argmax(probs))
+    confidence = float(probs[predicted_index])
 
     return {
-        "class": predicted_class,
+        "class": CLASS_NAMES[predicted_index],
         "confidence": confidence
     }
     
