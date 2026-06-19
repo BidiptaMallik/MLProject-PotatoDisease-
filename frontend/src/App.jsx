@@ -1,6 +1,10 @@
 import { useState, useRef } from "react";
 import "./App.css";
 
+
+
+
+
 function App() {
   const [started, setStarted] = useState(false);
   const [file, setFile] = useState(null);
@@ -9,6 +13,10 @@ function App() {
   const cameraRef = useRef(null);
   const galleryRef = useRef(null);
   const fileRef = useRef(null);
+
+  useEffect(() => {
+  console.log("API URL:", import.meta.env.VITE_API_URL);
+}, []);
 
  const handleSubmit = async () => {
   if (!file) {
