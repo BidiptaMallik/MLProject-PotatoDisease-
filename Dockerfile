@@ -1,13 +1,10 @@
 FROM tensorflow/serving
 
-COPY ./models/potatoes_model /models/potatoes_model
+# IMPORTANT: TensorFlow Serving requires version folder "1"
+COPY ./models/potatoes_model /models/potatoes_model/1
 
+# Model name (must match backend request URL)
 ENV MODEL_NAME=potatoes_model
 
+# Expose REST API port
 EXPOSE 8501
-
-CMD ["tensorflow_model_server", \
-     "--port=8500", \
-     "--rest_api_port=8501", \
-     "--model_name=potatoes_model", \
-     "--model_base_path=/models/potatoes_model"]
