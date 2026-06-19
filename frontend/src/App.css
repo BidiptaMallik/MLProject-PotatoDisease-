@@ -1,0 +1,170 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  min-height: 100vh;
+  font-family: 'Poppins', sans-serif;
+  overflow-x: hidden;
+}
+
+/* Shared background mixin — used on both pages */
+.landing,
+.predict-page {
+  min-height: 100vh;
+  background:
+    linear-gradient(rgba(0, 70, 0, 0.5), rgba(0, 70, 0, 0.5)),
+    url("https://images.unsplash.com/photo-1500937386664-56d1dfef3854");
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  text-align: center;
+}
+
+/* ── Landing page ─────────────────────────────── */
+.landing h2 {
+  margin: 0;
+  font-size: 1.2rem;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+/* ── Predict page ─────────────────────────────── */
+.predict-page {
+  padding: 40px 20px;
+}
+
+.predict-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  background: rgba(0, 0, 0, 0.35);
+  backdrop-filter: blur(6px);
+  border-radius: 20px;
+  padding: 40px 32px;
+  width: 100%;
+  max-width: 480px;
+}
+
+.predict-title {
+  font-size: 2.2rem !important;
+  margin: 0 0 8px;
+}
+
+.buttons {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+button {
+  padding: 12px 20px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  background: rgba(255, 255, 255, 0.15);
+  color: white;
+  font-family: 'Poppins', sans-serif;
+  font-size: 0.95rem;
+  transition: 0.2s;
+}
+
+button:hover {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+.predict-btn {
+  margin-top: 4px;
+  width: 100%;
+  max-width: 260px;
+  background: #32CD32;
+  font-size: 1.1rem;
+  border-radius: 50px;
+  padding: 14px 0;
+  transition: 0.3s;
+}
+
+.predict-btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 20px lime;
+  background: #32CD32;
+}
+
+.preview {
+  width: 280px;
+  max-width: 90%;
+  border-radius: 12px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+.result {
+  padding: 16px 24px;
+  background: rgba(0, 0, 0, 0.4);
+  border-radius: 12px;
+  width: 100%;
+}
+
+.result h2 {
+  margin: 0 0 6px;
+  font-size: 1.4rem;
+  color: #7CFC00;
+}
+
+.result h3 {
+  margin: 0;
+  font-weight: 400;
+  font-size: 1rem;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+/* ── Shared title animation ───────────────────── */
+.main-title {
+  font-size: 3.5rem;
+  font-weight: bold;
+  margin: 0 0 12px;
+  padding: 4px 8px;           /* prevents descender/ascender clipping */
+  line-height: 1.2;
+  background: linear-gradient(90deg, #7CFC00, #00FF7F, #ADFF2F);
+  background-size: 300%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: glow 4s infinite;
+}
+
+@keyframes glow {
+  0%   { background-position: 0%; }
+  100% { background-position: 300%; }
+}
+
+/* ── Start button ─────────────────────────────── */
+.start-btn {
+  margin-top: 30px;
+  padding: 15px 40px;
+  font-size: 22px;
+  border: none;
+  border-radius: 50px;
+  background: #32CD32;
+  color: white;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.start-btn:hover {
+  transform: scale(1.1);
+  box-shadow: 0 0 25px lime;
+}

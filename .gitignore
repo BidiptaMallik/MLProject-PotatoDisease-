@@ -1,0 +1,15 @@
+# Python
+__pycache__/
+*.pyc
+anaconda_projects/
+
+# Node
+frontend/node_modules/
+
+# Environment
+.env
+*.env
+
+# Training artifacts (large files)
+training/
+training.ipynb
