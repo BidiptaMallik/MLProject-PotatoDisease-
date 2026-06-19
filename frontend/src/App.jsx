@@ -10,29 +10,35 @@ function App() {
   const galleryRef = useRef(null);
   const fileRef = useRef(null);
 
-  const handleSubmit = async () => {
-    if (!file) {
-      alert("Please select an image");
-      return;
+ const handleSubmit = async () => {
+  if (!file) {
+    alert("Please select an image");
+    return;
+  }
+
+  const formData = new FormData();
+  formData.append("file", file);
+
+  try {
+    const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
+
+    const response = await fetch(`${API_URL}/predict`, {
+      method: "POST",
+      body: formData,
+    });
+
+    const data = await response.json();
+
+    if (!response.ok || data.error) {
+      throw new Error(data.error || "Prediction failed");
     }
 
-    const formData = new FormData();
-    formData.append("file", file);
-
-    try {
-      const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
-      const response = await fetch(`${API_URL}/predict`,{
-        method: "POST",
-        body: formData,
-      });
-
-      const data = await response.json();
-      setResult(data);
-    } catch (error) {
-      console.error(error);
-      alert("Prediction failed");
-    }
-  };
+    setResult(data);
+  } catch (error) {
+    console.error(error);
+    alert(error.message);
+  }
+};
 
   if (!started) {
     return (
