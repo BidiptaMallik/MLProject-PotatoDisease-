@@ -42,33 +42,49 @@ def read_file_as_image(data) -> np.ndarray:
 @app.post("/predict")
 async def predict(file: UploadFile = File(...)):
 
+    import time
+
     image = read_file_as_image(await file.read())
     img_batch = np.expand_dims(image, axis=0)
 
     json_data = {"instances": img_batch.tolist()}
 
-    try:
-        response = requests.post(
+    response = None
+    last_error = None
+
+    # 🔥 RETRY LOGIC (FIX FOR 502 / COLD START)
+    for attempt in range(5):
+        try:
+            response = requests.post(
                 endpoint,
-            json=json_data,
-            timeout=120
-        )
+                json=json_data,
+                timeout=120
+            )
 
-        print("Status:", response.status_code)
-        print("Body:", response.text[:500])
+            print(f"Attempt {attempt+1} status:", response.status_code)
 
-    except Exception as e:
-        print("ERROR:", repr(e))
-        return {"error": str(e)}
+            if response.status_code == 200:
+                break
+
+        except Exception as e:
+            last_error = str(e)
+            print(f"Attempt {attempt+1} failed:", e)
+            time.sleep(3)
+
+    
+    if response is None:
+        return {"error": f"Model not reachable: {last_error}"}
+
+    print("Final Status:", response.status_code)
+    print("Body:", response.text[:500])
 
     if response.status_code != 200:
         return {"error": response.text}
 
     result = response.json()
-
     predictions = result.get("predictions")
 
-    if predictions is None:
+    if not predictions:
         return {"error": "No predictions from model"}
 
     probs = np.squeeze(np.array(predictions))
