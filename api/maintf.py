@@ -49,7 +49,7 @@ async def predict(file: UploadFile = File(...)):
 
     try:
         response = requests.post(
-            endpoint,
+                endpoint,
             json=json_data,
             timeout=120
         )
@@ -66,13 +66,15 @@ async def predict(file: UploadFile = File(...)):
 
     result = response.json()
 
-    predictions = np.array(result.get("predictions"))
+    predictions = result.get("predictions")
 
-    # 🔥 safety check
-    if predictions is None or len(predictions) == 0:
-        return {"error": "Invalid prediction from model"}
+    if predictions is None:
+        return {"error": "No predictions from model"}
 
-    probs = predictions[0]
+    probs = np.squeeze(np.array(predictions))
+
+    if probs.ndim != 1:
+        return {"error": "Invalid prediction shape"}
 
     predicted_index = int(np.argmax(probs))
     confidence = float(probs[predicted_index])
