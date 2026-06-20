@@ -17,7 +17,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-endpoint = os.getenv("TF_SERVING_URL", "http://localhost:8501/v1/models/potatoes_model:predict")
+endpoint = os.getenv("TF_SERVING_URL")
 
 
 
@@ -47,7 +47,19 @@ async def predict(file: UploadFile = File(...)):
 
     json_data = {"instances": img_batch.tolist()}
 
-    response = requests.post(endpoint, json=json_data)
+    try:
+        response = requests.post(
+            endpoint,
+            json=json_data,
+            timeout=120
+        )
+
+        print("Status:", response.status_code)
+        print("Body:", response.text[:500])
+
+    except Exception as e:
+        print("ERROR:", repr(e))
+        return {"error": str(e)}
 
     if response.status_code != 200:
         return {"error": response.text}
